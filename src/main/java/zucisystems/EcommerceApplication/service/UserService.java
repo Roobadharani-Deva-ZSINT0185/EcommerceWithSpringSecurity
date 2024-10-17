@@ -25,37 +25,5 @@ public class UserService {
     public String getEncodedPassword(String password){
         return passwordEncoder.encode(password);
     }
-//    @Autowired
-//    private RoleRepository roleRepository;
-//
-//    public void addInitialValues(){
-//        Role userRole=new Role();
-//        userRole.setRoleName("User");
-//        userRole.setRoleDescription("this is user");
-//        roleRepository.save(userRole);
-//
-//        Role adminRole=new Role();
-//        adminRole.setRoleName("Admin");
-//        adminRole.setRoleDescription("this is admin");
-//        roleRepository.save(adminRole);
-//
-//        User user = new User();
-//        user.setUserName("rooba");
-//        user.setEmailId("rooba@gmail.com");
-//        user.setPassword("rooba@123");
-//        Set<Role> role=new HashSet<>();
-//        role.add(userRole);
-//        user.setRole(role);
-//        userRepository.save(user);
-//
-//        User aUser = new User();
-//        aUser.setUserName("oviya");
-//        aUser.setEmailId("oviya@gmail.com");
-//        aUser.setPassword("oviya@123");
-//        Set<Role> arole = new HashSet<>();
-//        arole.add(adminRole);
-//        aUser.setRole(arole);
-//        userRepository.save(aUser);
-//
-//    }
+
 }
