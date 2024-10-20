@@ -1,11 +1,15 @@
-package zucisystems.EcommerceApplication.service;
+package zucisystems.EcommerceApplication.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,8 +20,11 @@ import zucisystems.EcommerceApplication.dao.JwtResponse;
 import zucisystems.EcommerceApplication.entity.User;
 import zucisystems.EcommerceApplication.repository.UserRepository;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService implements UserDetailsService {
@@ -25,7 +32,11 @@ public class JwtService implements UserDetailsService {
     private UserRepository userRepository;
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+    @Autowired
+    @Lazy
     private AuthenticationManager authenticationManager;
+
+
 
     public JwtResponse createJwtToken(JwtRequest jwtRequest) throws Exception {
         String userName = jwtRequest.getUserName();
@@ -33,39 +44,37 @@ public class JwtService implements UserDetailsService {
         authenticate(userName,userPassword);
 
         final UserDetails userDetails = loadUserByUsername(userName);
+        System.out.println(userDetails);
 
         String generatedToken = jwtTokenUtil.generateToken(userDetails);
+        System.out.println(generatedToken);
 
-        User user = userRepository.findById(userName).get();
+        User user = userRepository.findByUserName(userName);
 
-        return new JwtResponse(user,generatedToken);
+        return new JwtResponse(user.getUserName(),generatedToken);
     }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findById(username).get();
+        User user = userRepository.findByUserName(username);
 
         if(user!=null){
+
+
+            Set<GrantedAuthority> authorities = user.getRoles().stream()
+                    .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
+                    .collect(Collectors.toSet());
             return new org.springframework.security.core.userdetails.User(
-                    user.getUserName(),
-                    user.getPassword(),
-                    getAuthoritize(user)
-            );
+                    user.getUserName(), user.getPassword(), authorities);
         }else{
             throw new UsernameNotFoundException("username is not valid");
         }
     }
 
-    private Set getAuthoritize(User user){
-        Set authoritize = new HashSet();
-        user.getRole().forEach(role->{
-            authoritize.add(new SimpleGrantedAuthority("ROLE_"+role.getRoleName()));
-        });
-        return authoritize;
-    }
 
     private void authenticate(String userName, String userPassword) throws Exception {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName, userPassword));
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName,userPassword));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }catch (DisabledException e){
             throw new Exception("user is disabled");
         }catch (BadCredentialsException e){

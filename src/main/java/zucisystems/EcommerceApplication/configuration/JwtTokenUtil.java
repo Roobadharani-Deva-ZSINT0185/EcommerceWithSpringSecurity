@@ -6,6 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +14,7 @@ import java.util.function.Function;
 
 @Component
 public class JwtTokenUtil {
-    private static final String SECRET_KEY = "ecommerce_application";
+    private static final String SECRET_KEY = "OlweIh0jjU2lMbaQFVYiexwezBDBgpLGdCM3BRCCwd5mjq8mk1QgbeJrVR+VgovOD/npf+iKxekQrQmB0oi9+A==";
     private static final int TOKEN_VALIDITY = 3600 * 5;
     public String getUserNameFromToken(String token){
         return getClaimFromToken(token,Claims::getSubject);

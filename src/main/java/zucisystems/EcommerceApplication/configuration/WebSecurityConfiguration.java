@@ -3,6 +3,8 @@ package zucisystems.EcommerceApplication.configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -19,12 +21,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+
 public class WebSecurityConfiguration {
     @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     @Autowired
+    @Lazy
     private JwtAuthenticationFilter jwtAuthenticationFilter;
     @Autowired
+    @Lazy
     private UserDetailsService jwtService;
      @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -35,12 +40,22 @@ public class WebSecurityConfiguration {
         httpSecurity
                 .csrf(csrf-> csrf.disable())
                 .authorizeHttpRequests(authorize->authorize
-                        .requestMatchers("/authentiate").permitAll()
-                        .requestMatchers("/role").permitAll()
-                        .requestMatchers("/reset-password").permitAll()
+                        .requestMatchers("/authenticate").permitAll()
+                        .requestMatchers("/createNewRole").permitAll()
+                        .requestMatchers("/register").permitAll()
+                        .requestMatchers("/login").permitAll()
                         .anyRequest().authenticated()
-                )
-                .exceptionHandling(exception-> exception
+                );
+
+                //rolebased authorization based on the http methods
+//        httpSecurity.cors(cors -> cors.disable())
+//                    .csrf(csrf -> csrf.disable())
+//                    .authorizeRequests().requestMatchers(HttpMethod.POST).hasAnyRole("ADMIN","USER")
+//                                .requestMatchers(HttpMethod.PUT).hasAnyRole("ADMIN","USER")
+//                                .requestMatchers(HttpMethod.DELETE).hasRole("ADMIN")
+//                                .requestMatchers(HttpMethod.GET).hasRole("USER");
+
+                httpSecurity.exceptionHandling(exception-> exception
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
                 .sessionManagement(session-> session

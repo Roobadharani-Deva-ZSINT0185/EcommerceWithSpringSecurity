@@ -16,9 +16,10 @@ import java.util.Set;
 @Table(name = "role", indexes = @Index(columnList = "role_name"))
 public class Role {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int roleId;
+    @Column(nullable = false)
     private String roleName;
     private String roleDescription;
-    @ManyToMany(mappedBy = "role")
-    Set<User> userSet;
 
 }

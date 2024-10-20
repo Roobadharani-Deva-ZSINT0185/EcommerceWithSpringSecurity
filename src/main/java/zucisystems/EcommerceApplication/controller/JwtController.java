@@ -7,14 +7,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import zucisystems.EcommerceApplication.dao.JwtRequest;
 import zucisystems.EcommerceApplication.dao.JwtResponse;
-import zucisystems.EcommerceApplication.service.JwtService;
+import zucisystems.EcommerceApplication.configuration.JwtService;
 
 @RestController
 @CrossOrigin
 public class JwtController {
     @Autowired
     private JwtService jwtService;
-    @PostMapping({"/authentiate"})
+    @PostMapping({"/authenticate"})
     public JwtResponse createJwtToken(@RequestBody JwtRequest jwtRequest) throws Exception {
         return jwtService.createJwtToken(jwtRequest);
     }
