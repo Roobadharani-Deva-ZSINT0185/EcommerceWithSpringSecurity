@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 
 public class WebSecurityConfiguration {
     @Autowired
@@ -53,7 +53,11 @@ public class WebSecurityConfiguration {
 //                    .authorizeRequests().requestMatchers(HttpMethod.POST).hasAnyRole("ADMIN","USER")
 //                                .requestMatchers(HttpMethod.PUT).hasAnyRole("ADMIN","USER")
 //                                .requestMatchers(HttpMethod.DELETE).hasRole("ADMIN")
-//                                .requestMatchers(HttpMethod.GET).hasRole("USER");
+//                                .requestMatchers(HttpMethod.GET).hasRole("USER")
+//                                .requestMatchers("/authenticate").permitAll()
+//                        .requestMatchers("/createNewRole").permitAll()
+//                        .requestMatchers("/register").permitAll()
+//                        .requestMatchers("/login").permitAll();
 
                 httpSecurity.exceptionHandling(exception-> exception
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)

@@ -14,15 +14,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import zucisystems.EcommerceApplication.configuration.JwtTokenUtil;
 import zucisystems.EcommerceApplication.dao.JwtRequest;
 import zucisystems.EcommerceApplication.dao.JwtResponse;
 import zucisystems.EcommerceApplication.entity.User;
 import zucisystems.EcommerceApplication.repository.UserRepository;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -60,9 +56,13 @@ public class JwtService implements UserDetailsService {
         if(user!=null){
 
 
+//            Set<GrantedAuthority> authorities = user.getRoles().stream()
+//                    .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
+//                    .collect(Collectors.toSet());
             Set<GrantedAuthority> authorities = user.getRoles().stream()
-                    .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRoleName()))
                     .collect(Collectors.toSet());
+
             return new org.springframework.security.core.userdetails.User(
                     user.getUserName(), user.getPassword(), authorities);
         }else{
